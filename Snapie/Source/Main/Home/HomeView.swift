@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct HomeView: View {
+    private var foods = ["Chicken Chop", "Fish n Chip", "Fried Noodle", "Fried Rice", "Bread"]
+    @State private var searchFood = ""
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            VStack() {
+                List {
+                    ForEach(foods, id: \.self) { food in
+                        Text(food)
+                    }
+                }.searchable(text: $searchFood)
+            }
+            .navigationTitle("Snapie")
+            .navigationBarTitleDisplayMode(.inline)
+            
+        }
     }
 }
 

@@ -10,8 +10,8 @@ import SwiftUI
 struct MainTabView: View {
     @State var selection = 0
     init() {
-    UITabBar.appearance().backgroundColor = UIColor.white
-
+        UITabBar.appearance().backgroundColor = UIColor.grey6
+       
     }
     
     var body: some View {
@@ -24,8 +24,8 @@ struct MainTabView: View {
                 }
                 Text("문서")
             }.tag(0)
-                
-
+            
+            
             AddView().tabItem {
                 Image("icon_add_circle_blue")
             }.tag(1)
@@ -40,9 +40,10 @@ struct MainTabView: View {
                 
             }.tag(2)
             
-
+            
         }
-        .accentColor(.gray)
+        .accentColor(.black)
+        
     }
 }
 extension UITabBarController {
@@ -53,7 +54,7 @@ extension UITabBarController {
         standardAppearance.stackedItemSpacing = 60
         standardAppearance.stackedItemWidth = 60
         
-      
+        
         tabBar.standardAppearance = standardAppearance
     }
 }
