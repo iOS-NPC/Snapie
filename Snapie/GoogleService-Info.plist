@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>722658692082-54ga8utie73iqbsfk8e8hns46pa4uevh.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.722658692082-54ga8utie73iqbsfk8e8hns46pa4uevh</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB2FaghkBHMm97W0qf3LhzoX4QP7o3AMnI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>722658692082</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>KyoungminNam.Snapie</string>
+	<key>PROJECT_ID</key>
+	<string>snapie-a49ff</string>
+	<key>STORAGE_BUCKET</key>
+	<string>snapie-a49ff.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:722658692082:ios:c2467ea56bdc033864f96b</string>
+</dict>
+</plist>
