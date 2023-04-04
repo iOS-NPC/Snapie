@@ -8,9 +8,21 @@
 import SwiftUI
 
 struct AddView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+    @State var presentSheet = false
+        
+        var body: some View {
+            NavigationView {
+                Button("Modal") {
+                    presentSheet = true
+                }
+                .navigationTitle("Main")
+            }.sheet(isPresented: $presentSheet) {
+                Text("Detail")
+                    .presentationDetents([.medium, .large])
+
+            }
+        }
+
 }
 
 struct AddView_Previews: PreviewProvider {

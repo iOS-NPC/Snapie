@@ -30,4 +30,6 @@ extension Color {
     static let grey4 = Color(hex: "E8E8E8")
     static let grey5 = Color(hex: "F6F6F6")
     static let grey6 = Color(hex: "FAFAFA")
+    static let grey7 = Color(hex: "999999")
+
 }

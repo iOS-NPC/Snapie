@@ -31,6 +31,10 @@
 		2F49B3AC29D43F35004987F9 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2F49B3AB29D43F35004987F9 /* FirebaseFirestoreSwift */; };
 		2F49B3AE29D43F35004987F9 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 2F49B3AD29D43F35004987F9 /* FirebaseStorage */; };
 		2F49B3B029D43F35004987F9 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 2F49B3AF29D43F35004987F9 /* FirebaseStorageCombine-Community */; };
+		2F649A9E29DC7F4F00CC8950 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649A9D29DC7F4F00CC8950 /* FirebaseStorageManager.swift */; };
+		2F649AA029DC801700CC8950 /* AddDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649A9F29DC801700CC8950 /* AddDataManager.swift */; };
+		2F649AA329DC80EB00CC8950 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649AA229DC80EB00CC8950 /* File.swift */; };
+		2F649AA529DC83AB00CC8950 /* Encodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649AA429DC83AB00CC8950 /* Encodable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +53,10 @@
 		2F49B39429D42738004987F9 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		2F49B39629D42B6F004987F9 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		2F49B39829D43DCF004987F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2F649A9D29DC7F4F00CC8950 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
+		2F649A9F29DC801700CC8950 /* AddDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataManager.swift; sourceTree = "<group>"; };
+		2F649AA229DC80EB00CC8950 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		2F649AA429DC83AB00CC8950 /* Encodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encodable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +156,7 @@
 		2F49B38229D41DC8004987F9 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				2F649A9D29DC7F4F00CC8950 /* FirebaseStorageManager.swift */,
 				2F49B38329D41DD3004987F9 /* Extension */,
 			);
 			path = Util;
@@ -158,6 +167,7 @@
 			children = (
 				2F49B39429D42738004987F9 /* Color.swift */,
 				2F49B39629D42B6F004987F9 /* UIColor.swift */,
+				2F649AA429DC83AB00CC8950 /* Encodable.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -193,7 +203,9 @@
 		2F49B38B29D41E8B004987F9 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				2F649AA129DC803600CC8950 /* Entity */,
 				2F49B38E29D41EBB004987F9 /* HomeView.swift */,
+				2F649A9F29DC801700CC8950 /* AddDataManager.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -212,6 +224,14 @@
 				2F49B39229D41ECE004987F9 /* TranslationView.swift */,
 			);
 			path = Translation;
+			sourceTree = "<group>";
+		};
+		2F649AA129DC803600CC8950 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				2F649AA229DC80EB00CC8950 /* File.swift */,
+			);
+			path = Entity;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -302,6 +322,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F49B39129D41EC2004987F9 /* AddView.swift in Sources */,
+				2F649AA529DC83AB00CC8950 /* Encodable.swift in Sources */,
+				2F649AA029DC801700CC8950 /* AddDataManager.swift in Sources */,
+				2F649A9E29DC7F4F00CC8950 /* FirebaseStorageManager.swift in Sources */,
 				2F49B37129D41B99004987F9 /* ContentView.swift in Sources */,
 				2F49B39329D41ECE004987F9 /* TranslationView.swift in Sources */,
 				2F49B36F29D41B99004987F9 /* SnapieApp.swift in Sources */,
@@ -309,6 +332,7 @@
 				2F49B38F29D41EBB004987F9 /* HomeView.swift in Sources */,
 				2F49B38829D41E1B004987F9 /* SplashScreenView.swift in Sources */,
 				2F49B38A29D41E30004987F9 /* MainTabView.swift in Sources */,
+				2F649AA329DC80EB00CC8950 /* File.swift in Sources */,
 				2F49B39529D42738004987F9 /* Color.swift in Sources */,
 				2F49B39729D42B6F004987F9 /* UIColor.swift in Sources */,
 			);

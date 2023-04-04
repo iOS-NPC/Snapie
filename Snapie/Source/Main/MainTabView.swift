@@ -24,12 +24,7 @@ struct MainTabView: View {
                 }
                 Text("문서")
             }.tag(0)
-            
-            
-            AddView().tabItem {
-                Image("icon_add_circle_blue")
-            }.tag(1)
-            
+                
             TranslationView().tabItem {
                 if selection == 2 {
                     Image("translate_on")
@@ -38,8 +33,7 @@ struct MainTabView: View {
                 }
                 Text("번역")
                 
-            }.tag(2)
-            
+            }.tag(1)
             
         }
         .accentColor(.black)
@@ -51,10 +45,9 @@ extension UITabBarController {
         let standardAppearance = UITabBarAppearance()
         
         standardAppearance.stackedItemPositioning = .centered
-        standardAppearance.stackedItemSpacing = 60
+        standardAppearance.stackedItemSpacing = 100
         standardAppearance.stackedItemWidth = 60
-        
-        
+
         tabBar.standardAppearance = standardAppearance
     }
 }
