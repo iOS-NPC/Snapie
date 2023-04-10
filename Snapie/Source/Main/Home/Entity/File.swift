@@ -28,5 +28,4 @@ struct File: Codable {
         nickname = try values.decode(String.self, forKey: .nickname)
         score = try values.decode(Float.self, forKey: .score)
     }
-
 }
