@@ -15,6 +15,7 @@ struct MainTabView: View {
     }
     
     var body: some View {
+        
         TabView(selection: $selection) {
             HomeView().tabItem {
                 if selection == 0 {
@@ -24,7 +25,7 @@ struct MainTabView: View {
                 }
                 Text("문서")
             }.tag(0)
-                
+            
             TranslationView().tabItem {
                 if selection == 2 {
                     Image("translate_on")
@@ -37,6 +38,8 @@ struct MainTabView: View {
             
         }
         .accentColor(.black)
+        
+        
         
     }
 }
