@@ -20,6 +20,7 @@ class SpeechRecognizer: ObservableObject {
     init() {
         recognizer = SFSpeechRecognizer()
         
+        
         /*
         Task(priority: .background) {
             do {
