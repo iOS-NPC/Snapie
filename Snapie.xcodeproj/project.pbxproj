@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F1614902A0F17A60029E9A9 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F16148F2A0F17A60029E9A9 /* AudioEngine.swift */; };
 		2F49B36F29D41B99004987F9 /* SnapieApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F49B36E29D41B99004987F9 /* SnapieApp.swift */; };
 		2F49B37129D41B99004987F9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F49B37029D41B99004987F9 /* ContentView.swift */; };
 		2F49B37329D41B9B004987F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F49B37229D41B9B004987F9 /* Assets.xcassets */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		2F05EE6629D4738300A688D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2F16148F2A0F17A60029E9A9 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		2F49B36B29D41B99004987F9 /* Snapie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snapie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F49B36E29D41B99004987F9 /* SnapieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapieApp.swift; sourceTree = "<group>"; };
 		2F49B37029D41B99004987F9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 			children = (
 				2FF25C8A29E6955200737346 /* RecordView.swift */,
 				2FF25C8C29E6BA6600737346 /* SpeechRecognizer.swift */,
+				2F16148F2A0F17A60029E9A9 /* AudioEngine.swift */,
 			);
 			path = Record;
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 				2F649AA029DC801700CC8950 /* AddDataManager.swift in Sources */,
 				2F649A9E29DC7F4F00CC8950 /* FirebaseStorageManager.swift in Sources */,
 				2F49B37129D41B99004987F9 /* ContentView.swift in Sources */,
+				2F1614902A0F17A60029E9A9 /* AudioEngine.swift in Sources */,
 				2F49B39329D41ECE004987F9 /* TranslationView.swift in Sources */,
 				2F49B36F29D41B99004987F9 /* SnapieApp.swift in Sources */,
 				2F49B38129D41DBD004987F9 /* Constant.swift in Sources */,
