@@ -10,6 +10,11 @@ import SwiftUI
 struct RecordView: View {
     @Binding var presentBottomSheet : Bool
     @Binding var presentAudioRecord : Bool
+    @StateObject var audioManager = AudioEngine()
+    
+    @State private var selectedLanguage = Language.korean
+    @State var text = ""
+    
     var body: some View {
         VStack {
             VStack {
@@ -19,6 +24,7 @@ struct RecordView: View {
                     .font(.system(size: 25, weight: .medium))
                     .foregroundColor(.grey7)
             }
+            Text(text)
             
             Spacer()
             HStack(spacing: 40) {
@@ -32,6 +38,15 @@ struct RecordView: View {
                     Image("record_start")
                     Text("녹음 시작")
                         .font(.system(size: 13, weight: .bold))
+                }.onTapGesture {
+                    audioManager.locale = Locale(identifier: selectedLanguage)
+                    audioManager.startRecording { speechText in
+                        guard let text = speechText, !text.isEmpty else {
+                            return
+                        }
+                        self.text = text
+
+                    }
                 }
                 
                 VStack {

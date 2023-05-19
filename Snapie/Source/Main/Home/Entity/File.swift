@@ -11,9 +11,10 @@ import FirebaseFirestoreSwift
 
 
 struct File: Codable {
-    let nickname: String
-    let score: Float
-    
+    let id : UUID
+    let text : String
+    let date : Float
+    /*
     private enum CodingKeys: String, CodingKey {
         case nickname
         case score
@@ -28,4 +29,5 @@ struct File: Codable {
         nickname = try values.decode(String.self, forKey: .nickname)
         score = try values.decode(Float.self, forKey: .score)
     }
+     */
 }
