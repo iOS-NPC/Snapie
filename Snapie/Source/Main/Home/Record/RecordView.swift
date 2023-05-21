@@ -27,6 +27,8 @@ struct RecordView: View {
             Text(text)
             
             
+            
+            
             Spacer()
             HStack(spacing: 40) {
                 VStack {
