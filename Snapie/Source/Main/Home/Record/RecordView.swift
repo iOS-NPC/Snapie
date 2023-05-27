@@ -25,10 +25,7 @@ struct RecordView: View {
                     .foregroundColor(.grey7)
             }
             Text(text)
-            
-            
-            
-            
+   
             Spacer()
             HStack(spacing: 40) {
                 VStack {
@@ -48,7 +45,6 @@ struct RecordView: View {
                             return
                         }
                         self.text = text
-
                     }
                 }
                 

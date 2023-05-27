@@ -6,15 +6,21 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct HomeView: View {
     private var foods = ["Chicken Chop", "Fish n Chip", "Fried Noodle", "Fried Rice", "Bread"]
     @State private var searchFood = ""
     @State var presentSheet = false
+    var permissionGranted = false
 
+    init() {
+        requestAudioPermission()
+    }
     var body: some View {
         NavigationView {
             VStack() {
+                
                 List {
                     ForEach(foods, id: \.self) { food in
                         Text(food)
@@ -51,6 +57,16 @@ struct HomeView: View {
     
         
     }
+    func requestAudioPermission(){
+            AVCaptureDevice.requestAccess(for: .audio, completionHandler: { (granted: Bool) in
+                if granted {
+                    print("Camera: 권한 허용")
+                } else {
+                    print("Camera: 권한 거부")
+                }
+            })
+        }
+
 }
 struct BottomSheet: View {
     @Binding var presentBottomSheet : Bool

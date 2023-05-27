@@ -36,11 +36,12 @@ class AudioEngine: ObservableObject {
     @Published var text : String = ""
     
     init() {
-        checkPermissions()
-        setupSession()
-        setupEngine()
-        
+        //requestCameraPermission()
+       // checkPermissions()
+       setupSession()
+       setupEngine()
     }
+  
     //MARK: - Methods
     /// Request authorization to use speech recognition services.
     func checkPermissions() {
