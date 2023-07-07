@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct RecordView: View {
-    @Binding var presentBottomSheet : Bool
     @Binding var presentAudioRecord : Bool
     @StateObject var audioManager = AudioEngine()
     
@@ -39,12 +38,17 @@ struct RecordView: View {
                     Text("녹음 시작")
                         .font(.system(size: 13, weight: .bold))
                 }.onTapGesture {
-                    audioManager.locale = Locale(identifier: selectedLanguage)
-                    audioManager.startRecording { speechText in
-                        guard let text = speechText, !text.isEmpty else {
-                            return
+                    if audioManager.audioPermission, audioManager.speechPermission {
+                        audioManager.setupSession()
+                        audioManager.setupEngine()
+                        
+                        audioManager.locale = Locale(identifier: selectedLanguage)
+                        audioManager.startRecording { speechText in
+                            guard let text = speechText, !text.isEmpty else {
+                                return
+                            }
+                            self.text = text
                         }
-                        self.text = text
                     }
                 }
                 
@@ -54,18 +58,21 @@ struct RecordView: View {
                         .font(.system(size: 13, weight: .bold))
                 }
                 .onTapGesture {
-                    presentBottomSheet.toggle()
-                    presentAudioRecord.toggle()
+                    presentAudioRecord = false
                 }
             }
         }
         .padding(EdgeInsets(top: 32, leading: 24, bottom: 0, trailing: 24))
+        .onAppear{
+            audioManager.requestAudioPermission()
+            audioManager.requestSpeechRecogPermissions()
+        }
     }
 }
 
 struct RecordView_Previews: PreviewProvider {
 
     static var previews: some View {
-        RecordView(presentBottomSheet: .constant(true), presentAudioRecord: .constant(true))
+        RecordView(presentAudioRecord: .constant(true))
     }
 }

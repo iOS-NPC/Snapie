@@ -25,12 +25,12 @@ final class AddDataManager {
     }
 
     func readFile() {
-        let collectionPath = "scores"
+        let collectionPath = "audio"
         removeListener()
         let collectionListener = Firestore.firestore().collection(collectionPath)
         var files = [File]()
  
-        collectionListener.order(by: "score", descending: true).getDocuments() { (querySnapshot, err) in
+        collectionListener.order(by: "audio", descending: true).getDocuments() { (querySnapshot, err) in
                  if let err = err {
                      print("Error getting documents: \(err)")
                  } else {

@@ -23,7 +23,8 @@ class AudioEngine: ObservableObject {
         case paused
         case stopped
     }
-    
+    @Published var speechPermission = false
+    @Published var audioPermission = false
     private var engine: AVAudioEngine!
     private var mixerNode: AVAudioMixerNode!
     private var state : RecordingState = .stopped
@@ -33,22 +34,22 @@ class AudioEngine: ObservableObject {
     public var locale = Locale.current
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     
+    @Published var time : String = ""
     @Published var text : String = ""
     
     init() {
-        //requestCameraPermission()
-       // checkPermissions()
-       setupSession()
-       setupEngine()
+        
     }
   
     //MARK: - Methods
     /// Request authorization to use speech recognition services.
-    func checkPermissions() {
+    func requestSpeechRecogPermissions() {
         SFSpeechRecognizer.requestAuthorization { status in
             DispatchQueue.main.async {
                 switch status {
                 case .authorized:
+                    print("speechrecognition 권한 허용")
+                    self.speechPermission = true
                     break
                 default:
                     print("Speechrecognition is not available!")
@@ -56,9 +57,33 @@ class AudioEngine: ObservableObject {
             }
         }
     }
+    func requestAudioPermission() {
+        let status = AVCaptureDevice.authorizationStatus(for: .audio)
+        
+        switch status {
+        case .authorized:
+            print("Audio: 권한 허용")
+            self.audioPermission = true
+        case .denied:
+            print("Audio: 권한 거부")
+        case .restricted,.notDetermined:
+            AVCaptureDevice.requestAccess(for: .audio, completionHandler: { (granted: Bool) in
+                if granted {
+                    print("Audio: 권한 허용")
+                    self.audioPermission = true
+                } else {
+                    print("Audio: 권한 거부")
+                }
+            })
+        default:
+            break
+        }
+         
+    }
+    
 
     
-    fileprivate func setupSession() {
+    func setupSession() {
         let session = AVAudioSession.sharedInstance()
         
         do {
@@ -68,7 +93,8 @@ class AudioEngine: ObservableObject {
             print("[ERROR] \(#function) - \(error.localizedDescription)")
         }
     }
-    fileprivate func setupEngine() {
+    
+    func setupEngine() {
         engine = AVAudioEngine()
         mixerNode = AVAudioMixerNode()
         
@@ -87,7 +113,7 @@ class AudioEngine: ObservableObject {
         let inputNode = engine.inputNode
         let inputFormat = inputNode.outputFormat(forBus: 0)
         engine.connect(inputNode, to: mixerNode, format: inputFormat)
-        let mixerFormat = AVAudioFormat(commonFormat: .pcmFormatInt32, sampleRate: inputFormat.sampleRate, channels: 1, interleaved: false)
+        let mixerFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: inputFormat.sampleRate, channels: 1, interleaved: false)
         engine.connect(mixerNode, to: engine.mainMixerNode, format: mixerFormat)
     }
     

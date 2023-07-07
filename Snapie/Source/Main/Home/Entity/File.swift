@@ -13,7 +13,9 @@ import FirebaseFirestoreSwift
 struct File: Codable {
     let id : UUID
     let text : String
-    let date : Float
+    let date : Date
+    let totalTime : Int
+    let audioTitle : String
     /*
     private enum CodingKeys: String, CodingKey {
         case nickname

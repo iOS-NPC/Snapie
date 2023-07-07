@@ -7,11 +7,14 @@
 
 import SwiftUI
 import AVFoundation
+import UniformTypeIdentifiers
 
 struct HomeView: View {
-    private var foods = ["Chicken Chop", "Fish n Chip", "Fried Noodle", "Fried Rice", "Bread"]
+    private var foods = ["녹음1", "녹음2", "파일1", "파일2"]
     @State private var searchFood = ""
     @State var presentSheet = false
+    @State var presentAudioRecord = false
+    @State var isShowingDocumentPicker = false
     var permissionGranted = false
 
     init() {
@@ -19,12 +22,11 @@ struct HomeView: View {
     }
     var body: some View {
         NavigationView {
+            
             VStack() {
-                
                 List {
                     ForEach(foods, id: \.self) { food in
                         Text(food)
-                        
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -47,12 +49,16 @@ struct HomeView: View {
             }
             .background(.white)
             .sheet(isPresented: $presentSheet) {
-                BottomSheet(presentBottomSheet: $presentSheet)
+                BottomSheet(presentBottomSheet: $presentSheet, presentAudioRecord: $presentAudioRecord, isShowingDocumentPicker: $isShowingDocumentPicker)
                     .presentationDetents([.medium, .large])
 
             }
             .navigationTitle("Snapie")
             .navigationBarTitleDisplayMode(.inline)
+            .fullScreenCover(isPresented: $presentAudioRecord, content: {
+                RecordView(presentAudioRecord: $presentAudioRecord)
+                    
+            })
         }
     
         
@@ -70,7 +76,8 @@ struct HomeView: View {
 }
 struct BottomSheet: View {
     @Binding var presentBottomSheet : Bool
-    @State var presentAudioRecord = false
+    @Binding var presentAudioRecord : Bool
+    @Binding var isShowingDocumentPicker : Bool
     var body: some View {
         VStack(spacing: 30) {
             Text("새 파일 만들기")
@@ -93,18 +100,32 @@ struct BottomSheet: View {
                         Text("음성 녹음")
                             .font(.system(size: 13, weight: .bold))
                     }
-                    .fullScreenCover(isPresented: $presentAudioRecord, content: {
-                        RecordView(presentBottomSheet: $presentBottomSheet, presentAudioRecord: $presentAudioRecord)
-                            
-                    })
                     .onTapGesture {
                         //self.dismissBottomSheet.toggle()
-                        self.presentAudioRecord.toggle()
+                        self.presentBottomSheet = false
+                        self.presentAudioRecord = true
                     }
                 VStack {
                     Image("icon_file_upload")
                     Text("파일 업로드")
                         .font(.system(size: 13, weight: .bold))
+                }
+                .onTapGesture {
+                    self.isShowingDocumentPicker = true
+                }
+                .fileImporter(
+                    isPresented: $isShowingDocumentPicker,
+                    allowedContentTypes: [.audio],
+                    allowsMultipleSelection: false
+                ) { result in
+                    guard let fileURL = try? result.get().first else {
+                        // 파일을 가져오지 못한 경우 또는 선택된 파일이 없는 경우 처리할 코드
+                        return
+                    }
+                    
+                    // 파일 URL을 사용하여 가져온 파일 처리
+                    // 예: 음성 파일 재생, 업로드 등
+                    handleFile(at: fileURL)
                 }
                 /*
                 VStack {
@@ -116,9 +137,12 @@ struct BottomSheet: View {
                 
                 
         }
+        
     }
     
-    
+    func handleFile(at url: URL) {
+            // 파일 처리 로직을 구현
+        }
 }
 
 struct HomeView_Previews: PreviewProvider {
