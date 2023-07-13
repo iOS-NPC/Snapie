@@ -19,6 +19,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct SnapieApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     var body: some Scene {
         WindowGroup {
             SplashScreenView()

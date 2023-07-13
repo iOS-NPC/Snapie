@@ -34,14 +34,14 @@
 		2F49B3B029D43F35004987F9 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 2F49B3AF29D43F35004987F9 /* FirebaseStorageCombine-Community */; };
 		2F649A9E29DC7F4F00CC8950 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649A9D29DC7F4F00CC8950 /* FirebaseStorageManager.swift */; };
 		2F649AA029DC801700CC8950 /* AddDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649A9F29DC801700CC8950 /* AddDataManager.swift */; };
-		2F649AA329DC80EB00CC8950 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649AA229DC80EB00CC8950 /* File.swift */; };
+		2F649AA329DC80EB00CC8950 /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649AA229DC80EB00CC8950 /* AudioFile.swift */; };
 		2F649AA529DC83AB00CC8950 /* Encodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F649AA429DC83AB00CC8950 /* Encodable.swift */; };
 		2FF25C8B29E6955200737346 /* RecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FF25C8A29E6955200737346 /* RecordView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2F05EE6629D4738300A688D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		2F16148F2A0F17A60029E9A9 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		2F16148F2A0F17A60029E9A9 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		2F49B36B29D41B99004987F9 /* Snapie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Snapie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F49B36E29D41B99004987F9 /* SnapieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapieApp.swift; sourceTree = "<group>"; };
 		2F49B37029D41B99004987F9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 		2F49B39829D43DCF004987F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2F649A9D29DC7F4F00CC8950 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 		2F649A9F29DC801700CC8950 /* AddDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDataManager.swift; sourceTree = "<group>"; };
-		2F649AA229DC80EB00CC8950 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		2F649AA229DC80EB00CC8950 /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
 		2F649AA429DC83AB00CC8950 /* Encodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encodable.swift; sourceTree = "<group>"; };
 		2FF25C8A29E6955200737346 /* RecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -234,7 +234,7 @@
 		2F649AA129DC803600CC8950 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
-				2F649AA229DC80EB00CC8950 /* File.swift */,
+				2F649AA229DC80EB00CC8950 /* AudioFile.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -347,7 +347,7 @@
 				2F49B38F29D41EBB004987F9 /* HomeView.swift in Sources */,
 				2F49B38829D41E1B004987F9 /* SplashScreenView.swift in Sources */,
 				2F49B38A29D41E30004987F9 /* MainTabView.swift in Sources */,
-				2F649AA329DC80EB00CC8950 /* File.swift in Sources */,
+				2F649AA329DC80EB00CC8950 /* AudioFile.swift in Sources */,
 				2F49B39529D42738004987F9 /* Color.swift in Sources */,
 				2FF25C8B29E6955200737346 /* RecordView.swift in Sources */,
 				2F49B39729D42B6F004987F9 /* UIColor.swift in Sources */,

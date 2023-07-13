@@ -11,6 +11,7 @@ import UniformTypeIdentifiers
 
 struct HomeView: View {
     private var foods = ["녹음1", "녹음2", "파일1", "파일2"]
+    @StateObject var viewModel = AddDataManager()
     @State private var searchFood = ""
     @State var presentSheet = false
     @State var presentAudioRecord = false
@@ -21,12 +22,31 @@ struct HomeView: View {
         requestAudioPermission()
     }
     var body: some View {
+        
         NavigationView {
             
             VStack() {
                 List {
-                    ForEach(foods, id: \.self) { food in
-                        Text(food)
+                    ForEach(viewModel.audioFiles, id: \.self) { audio in
+                        HStack(spacing:20) {
+                            
+                            Image("docu")
+                                .padding()
+                                .background(Color.primary1)
+                                .cornerRadius(8)
+                                            
+                            VStack(alignment: .leading,spacing:8){
+                                Text("\(audio.audioTitle)")
+                                    .font(.system(size: 16, weight: .semibold))
+                                Text("subTitle")
+                                    .font(.system(size: 14, weight: .regular))
+                            }
+                            Spacer()
+                            var timeAgo = timeAgoSinceDate(date: audio.recordedAt, numericDates: false)
+                            Text("\(timeAgo)")
+                                .font(.system(size: 14, weight: .regular))
+                                .foregroundColor(.grey3)
+                        }
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -66,12 +86,74 @@ struct HomeView: View {
     func requestAudioPermission(){
             AVCaptureDevice.requestAccess(for: .audio, completionHandler: { (granted: Bool) in
                 if granted {
-                    print("Camera: 권한 허용")
+                    print("Autdio: 권한 허용")
                 } else {
-                    print("Camera: 권한 거부")
+                    print("Audio: 권한 거부")
                 }
             })
         }
+    func timeAgoSinceDate(date: Date, numericDates: Bool = false) -> String {
+        let calendar = Calendar.current
+        let now = Date()
+        let earliest = now < date ? now : date
+        let latest = (earliest == now) ? date : now
+
+        let components: DateComponents = calendar.dateComponents([.minute, .hour, .day, .weekOfYear, .month, .year, .second], from: earliest, to: latest)
+
+        if (components.year! >= 2) {
+            return "\(components.year!)년 전"
+        } else if (components.year! >= 1){
+            if (numericDates){
+                return "1년 전"
+            } else {
+                return "작년"
+            }
+        } else if (components.month! >= 2) {
+            return "\(components.month!)달 전"
+        } else if (components.month! >= 1){
+            if (numericDates){
+                return "1달 전"
+            } else {
+                return "지난 달"
+            }
+        } else if (components.weekOfYear! >= 2) {
+            return "\(components.weekOfYear!)주 전"
+        } else if (components.weekOfYear! >= 1){
+            if (numericDates){
+                return "1주 전"
+            } else {
+                return "지난 주"
+            }
+        } else if (components.day! >= 2) {
+            return "\(components.day!)일 전"
+        } else if (components.day! >= 1){
+            if (numericDates){
+                return "1일 전"
+            } else {
+                return "어제"
+            }
+        } else if (components.hour! >= 2) {
+            return "\(components.hour!)시간 전"
+        } else if (components.hour! >= 1){
+            if (numericDates){
+                return "1시간 전"
+            } else {
+                return "한 시간 전"
+            }
+        } else if (components.minute! >= 2) {
+            return "\(components.minute!)분 전"
+        } else if (components.minute! >= 1){
+            if (numericDates){
+                return "1분 전"
+            } else {
+                return "방금 전"
+            }
+        } else if (components.second! >= 3) {
+            return "\(components.second!)초 전"
+        } else {
+            return "지금"
+        }
+    }
 
 }
 struct BottomSheet: View {
@@ -143,6 +225,8 @@ struct BottomSheet: View {
     func handleFile(at url: URL) {
             // 파일 처리 로직을 구현
         }
+    
+
 }
 
 struct HomeView_Previews: PreviewProvider {

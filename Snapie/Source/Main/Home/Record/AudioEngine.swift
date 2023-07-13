@@ -23,19 +23,29 @@ class AudioEngine: ObservableObject {
         case paused
         case stopped
     }
+    
+    var firebaseManager = FirebaseManager()
     @Published var speechPermission = false
     @Published var audioPermission = false
     private var engine: AVAudioEngine!
     private var mixerNode: AVAudioMixerNode!
-    private var state : RecordingState = .stopped
+   var state : RecordingState = .stopped
     private var isInterrupted : Bool = false
     private var configChangePending : Bool = false
+    private var audioFile: AVAudioFile?
+    private var audioUrl : URL?
     
     public var locale = Locale.current
+    private let speechRecognizer = SFSpeechRecognizer()
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
     
-    @Published var time : String = ""
-    @Published var text : String = ""
+    @Published var recognizedText : String = ""
+    @Published var recordingTime = "00:00"
+    @Published var title = ""
+    
+    private var timer: DispatchSourceTimer?
+    var secondsElapsed = 0
     
     init() {
         
@@ -109,7 +119,7 @@ class AudioEngine: ObservableObject {
     }
     
     func makeConnection() {
-        
+
         let inputNode = engine.inputNode
         let inputFormat = inputNode.outputFormat(forBus: 0)
         engine.connect(inputNode, to: mixerNode, format: inputFormat)
@@ -118,49 +128,62 @@ class AudioEngine: ObservableObject {
     }
     
     
-    func startRecording(completion: @escaping (String?) -> Void) {
+    func startRecording() {
+ 
         
-        guard let recognizer = SFSpeechRecognizer(locale: locale), recognizer.isAvailable else {
-            print("Speech recognition is not available")
-            return
-        }
-        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-        /// Async method for the speech recognition request to initiate the speech recognition process on the audio contained in the request object
-        recognizer.recognitionTask(with: recognitionRequest!) { result, error in
-            guard error == nil else {
-                print("Recognition error \(error!.localizedDescription)")
-                return
-            }
-            guard let result = result else { return }
-            /// Checks is result of recognition is final and its transcriptionn won't change
-            if result.isFinal {
-                /// Async execution of speech recognition result as string
-                completion(result.bestTranscription.formattedString)
-            }
-        }
         let tapNode: AVAudioNode = mixerNode
         let format = tapNode.outputFormat(forBus: 0)
+        recognitionTask?.cancel()
+        recognitionTask = nil
+        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         
-        let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let file = try! AVAudioFile(forWriting: documentURL.appendingPathComponent("recording.caf"), settings: format.settings)
         
+        guard let recognitionRequest = recognitionRequest else { return }
+        recognitionRequest.shouldReportPartialResults = true
+        
+        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest, resultHandler: { [weak self] result, error in
+            guard let self = self else { return }
+            if let result = result {
+                DispatchQueue.main.async {
+                    self.recognizedText = result.bestTranscription.formattedString
+                }
+            }
+            
+            if error != nil || (result?.isFinal ?? false) {
+                self.recognitionRequest = nil
+                self.recognitionTask = nil
+            }
+        })
+        
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        audioUrl = documentsDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
+        audioFile = try! AVAudioFile(forWriting: audioUrl!, settings: format.settings)
+         
         tapNode.installTap(onBus: 0, bufferSize: 4096, format: format) { (buffer, time) in
-            try? file.write(from: buffer)
+            //try? file.write(from: buffer)
             self.recognitionRequest?.append(buffer)
+            do {
+                try self.audioFile?.write(from: buffer)
+            } catch {
+                print("Error writing audio file: \(error)")
+            }
             
         }
+        startTimer()
         try! engine.start()
-        state = .recording
+        //state = .recording
     }
     
-    func resumeRecording() throws {
-        try engine.start()
-        state = .recording
+    func resumeRecording() {
+        try! engine.start()
+        //state = .recording
+        startTimer()
     }
     
     func pauseRecording() {
         engine.pause()
-        state = .paused
+        //state = .paused
+        stopTimer()
     }
     
     func stopRecording() {
@@ -171,7 +194,44 @@ class AudioEngine: ObservableObject {
         mixerNode.removeTap(onBus: 0)
         
         engine.stop()
-        state = .stopped
+        //state = .stopped
+        stopTimer()
+        
+        
+    }
+    func uploadAudioFile() {
+        print("url : \(audioUrl)")
+        print("title : \(title)")
+        print("text: \(recognizedText)")
+        print("total time : \(secondsElapsed)")
+        firebaseManager.uploadAudioFile(url: audioUrl, audioTitle: title, text: recognizedText, totalTime: secondsElapsed) { result in
+            print(result)
+        }
+    }
+    
+    private func startTimer() {
+            if timer == nil {
+                timer = DispatchSource.makeTimerSource(queue: .main)
+                timer?.schedule(deadline: .now(), repeating: .seconds(1))
+                timer?.setEventHandler { [weak self] in
+                    self?.secondsElapsed += 1
+                    let minute = (self?.secondsElapsed)! / 60
+                    let second = (self?.secondsElapsed)! % 60
+                    let minutes = String(format: "%02d", minute)
+                    let seconds = String(format: "%02d", second)
+                    DispatchQueue.main.async {
+                        self?.recordingTime = "\(minutes):\(seconds)"
+                    }
+                }
+            }
+            timer?.resume()
+        }
+    private func stopTimer() {
+            timer?.cancel()
+            timer = nil
+        if state == .stopped {
+            recordingTime = "00:00"
+        }
     }
     // 마이크에 대한 접근 제어하기
     // 인터럽션이 발생하고 끝났을 때 다시 녹음 재개 -> 예외 처리 필요

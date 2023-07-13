@@ -13,17 +13,25 @@ struct RecordView: View {
     
     @State private var selectedLanguage = Language.korean
     @State var text = ""
+    @State var title = "새 파일"
     
     var body: some View {
         VStack {
-            VStack {
-                Text("새 파일")
-                    .font(.system(size: 20, weight: .semibold))
-                Text("0:00")
-                    .font(.system(size: 25, weight: .medium))
-                    .foregroundColor(.grey7)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing:30) {
+                    VStack {
+                        TextField("\(title)", text: $audioManager.title)
+                            .font(.system(size: 20, weight: .semibold))
+                        Text("\(audioManager.recordingTime)")
+                            .font(.system(size: 25, weight: .medium))
+                            .foregroundColor(.grey7)
+                    }
+                    Text("\(audioManager.recognizedText)")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(.grey1)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
-            Text(text)
    
             Spacer()
             HStack(spacing: 40) {
@@ -33,24 +41,49 @@ struct RecordView: View {
                         .font(.system(size: 13, weight: .bold))
                     
                 }
+                .onTapGesture {
+                    audioManager.stopRecording()
+                    audioManager.uploadAudioFile()
+                    
+                    audioManager.state = .stopped
+                    //audioManager.secondsElapsed = 0
+                }
                 VStack {
-                    Image("record_start")
-                    Text("녹음 시작")
-                        .font(.system(size: 13, weight: .bold))
-                }.onTapGesture {
-                    if audioManager.audioPermission, audioManager.speechPermission {
-                        audioManager.setupSession()
-                        audioManager.setupEngine()
+                    switch audioManager.state {
+                    case .stopped :
+                        Image("record_start")
+                        Text("녹음 시작")
+                    case .recording :
+                        Image("record_pause")
+                        Text("일시 정지")
+                    case .paused :
+                        Image("record_start")
+                        Text("계속 녹음")
+                    }
                         
-                        audioManager.locale = Locale(identifier: selectedLanguage)
-                        audioManager.startRecording { speechText in
-                            guard let text = speechText, !text.isEmpty else {
-                                return
+                }.onTapGesture {
+                    
+                        switch audioManager.state {
+                        case .stopped :
+                            Image("record_start")
+                            Text("녹음 시작")
+                            if audioManager.audioPermission, audioManager.speechPermission {
+                                audioManager.setupSession()
+                                audioManager.setupEngine()
+                                
+                                audioManager.locale = Locale(identifier: selectedLanguage)
+                                audioManager.startRecording()
+                                audioManager.state = .recording
                             }
-                            self.text = text
+                        case .recording :
+                            audioManager.state = .paused
+                            audioManager.pauseRecording()
+                        case .paused :
+                            audioManager.state = .recording
+                            audioManager.resumeRecording()
                         }
                     }
-                }
+                .font(.system(size: 13, weight: .bold))
                 
                 VStack {
                     Image("record_cancle")
@@ -58,6 +91,8 @@ struct RecordView: View {
                         .font(.system(size: 13, weight: .bold))
                 }
                 .onTapGesture {
+                    audioManager.stopRecording()
+                    audioManager.state = .stopped
                     presentAudioRecord = false
                 }
             }

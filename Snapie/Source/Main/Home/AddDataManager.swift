@@ -8,51 +8,23 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-final class AddDataManager {
-    private var documentListener: ListenerRegistration?
-    
-    func createFile(_ file: File, completion: ((Error?) -> Void)? = nil) {
-        let collectionPath = "scores"
-        let collectionListener = Firestore.firestore().collection(collectionPath)
-        
-        guard let dictionary = file.asDictionary else {
-            print("decode error")
-            return
-        }
-        collectionListener.addDocument(data: dictionary) { error in
-            completion?(error)
-        }
+final class AddDataManager : ObservableObject {
+    var firebaseManager = FirebaseManager()
+    @Published var audioFiles : [AudioFile] = []
+    init() {
+        self.fetchAudioFiles()
     }
-
-    func readFile() {
-        let collectionPath = "audio"
-        removeListener()
-        let collectionListener = Firestore.firestore().collection(collectionPath)
-        var files = [File]()
- 
-        collectionListener.order(by: "audio", descending: true).getDocuments() { (querySnapshot, err) in
-                 if let err = err {
-                     print("Error getting documents: \(err)")
-                 } else {
-                     
-                     for document in querySnapshot!.documents {
-                         print("\(document.documentID) => \(document.data())")
-                         do {
-                             let file = try document.data(as: File.self)
-                             files.append(file)
-                         } catch {
-                             print("Error getting documents: \(err)")
-                         }
-                     }
-                     //delegate.didSuccess(ranking : rankings)
-                 }
-                
-             }
-        
-        
-    }
-    
-    func removeListener() {
-        documentListener?.remove()
+    func fetchAudioFiles() {
+        firebaseManager.fetchAudioFiles() { (result) in
+            switch result {
+            case .success(let audioFiles):
+                // Use the audioFiles array to update your UI
+                print(audioFiles)
+                self.audioFiles = audioFiles
+            case .failure(let error):
+                // Handle any errors
+                print("Error fetching audio files: \(error)")
+            }
+        }
     }
 }
