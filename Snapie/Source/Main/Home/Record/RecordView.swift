@@ -13,15 +13,16 @@ struct RecordView: View {
     
     @State private var selectedLanguage = Language.korean
     @State var text = ""
-    @State var title = "새 파일"
+    @State var title = "제목을 변경하세요."
     
     var body: some View {
         VStack {
             ScrollView(showsIndicators: false) {
                 VStack(spacing:30) {
-                    VStack {
+                    VStack(spacing:15) {
                         TextField("\(title)", text: $audioManager.title)
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.system(size: 28, weight: .semibold))
+                            .multilineTextAlignment(.center)
                         Text("\(audioManager.recordingTime)")
                             .font(.system(size: 25, weight: .medium))
                             .foregroundColor(.grey7)

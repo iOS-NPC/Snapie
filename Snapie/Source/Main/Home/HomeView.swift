@@ -16,6 +16,7 @@ struct HomeView: View {
     @State var presentSheet = false
     @State var presentAudioRecord = false
     @State var isShowingDocumentPicker = false
+    @State var presentDetailView = false
     var permissionGranted = false
 
     init() {
@@ -26,31 +27,37 @@ struct HomeView: View {
         NavigationView {
             
             VStack() {
-                List {
-                    ForEach(viewModel.audioFiles, id: \.self) { audio in
+                
+                ForEach(viewModel.audioFiles.indices, id: \.self) { index in
+                    NavigationLink(destination: AudioDetailView(title: $viewModel.audioFiles[index].audioTitle, content: $viewModel.audioFiles[index].text, date: $viewModel.audioFiles[index].recordedAt, totalTime: $viewModel.audioFiles[index].totalTime)) {
                         HStack(spacing:20) {
                             
                             Image("docu")
                                 .padding()
                                 .background(Color.primary1)
                                 .cornerRadius(8)
-                                            
-                            VStack(alignment: .leading,spacing:8){
-                                Text("\(audio.audioTitle)")
-                                    .font(.system(size: 16, weight: .semibold))
-                                Text("subTitle")
-                                    .font(.system(size: 14, weight: .regular))
-                            }
+                            
+                            Text("\(viewModel.audioFiles[index].audioTitle)")
+                                .font(.system(size: 16, weight: .semibold))
+                            
+                            
                             Spacer()
-                            var timeAgo = timeAgoSinceDate(date: audio.recordedAt, numericDates: false)
+                            var timeAgo = timeAgoSinceDate(date: viewModel.audioFiles[index].recordedAt, numericDates: false)
                             Text("\(timeAgo)")
                                 .font(.system(size: 14, weight: .regular))
                                 .foregroundColor(.grey3)
+                            
+                            
                         }
+                        .frame(maxWidth: .infinity)
+                        
                     }
+                        
                 }
-                .scrollContentBackground(.hidden)
-                .searchable(text: $searchFood)
+                
+               
+                //.scrollContentBackground(.hidden)
+               // .searchable(text: $searchFood)
                 
                 Spacer()
                 HStack {
@@ -67,6 +74,9 @@ struct HomeView: View {
                 }
 
             }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 24)
+            .padding(.top, 30)
             .background(.white)
             .sheet(isPresented: $presentSheet) {
                 BottomSheet(presentBottomSheet: $presentSheet, presentAudioRecord: $presentAudioRecord, isShowingDocumentPicker: $isShowingDocumentPicker)
@@ -79,6 +89,9 @@ struct HomeView: View {
                 RecordView(presentAudioRecord: $presentAudioRecord)
                     
             })
+            .onAppear{
+                viewModel.fetchAudioFiles()
+            }
         }
     
         

@@ -78,7 +78,7 @@ class FirebaseManager: ObservableObject {
     func fetchAudioFiles(completion: @escaping (Result<[AudioFile], Error>) -> Void) {
         let db = Firestore.firestore()
         
-        db.collection("audioFiles").getDocuments() { (querySnapshot, err) in
+        db.collection("audioFiles").order(by: "recordedAt", descending: true).getDocuments() { (querySnapshot, err) in
             if let err = err {
                 completion(.failure(err))
             } else {

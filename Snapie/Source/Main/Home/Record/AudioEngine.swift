@@ -43,6 +43,7 @@ class AudioEngine: ObservableObject {
     @Published var recognizedText : String = ""
     @Published var recordingTime = "00:00"
     @Published var title = ""
+    @Published var subTitle = ""
     
     private var timer: DispatchSourceTimer?
     var secondsElapsed = 0
@@ -204,6 +205,9 @@ class AudioEngine: ObservableObject {
         print("title : \(title)")
         print("text: \(recognizedText)")
         print("total time : \(secondsElapsed)")
+        if title.isEmpty {
+            title = "새 녹음"
+        }
         firebaseManager.uploadAudioFile(url: audioUrl, audioTitle: title, text: recognizedText, totalTime: secondsElapsed) { result in
             print(result)
         }

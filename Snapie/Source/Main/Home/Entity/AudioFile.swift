@@ -11,9 +11,10 @@ import FirebaseFirestoreSwift
 
 
 struct AudioFile: Codable, Hashable {
-    let audioUrl : String
-    let text : String
-    let recordedAt : Date
-    let totalTime : Int
-    let audioTitle : String
+    var audioUrl : String
+    var text : String
+    var recordedAt : Date
+    var totalTime : Int
+    var audioTitle : String
+    //let subTitle : String
 }
