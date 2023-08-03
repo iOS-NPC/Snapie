@@ -8,6 +8,8 @@
 import SwiftUI
 import AVFoundation
 import UniformTypeIdentifiers
+import Speech
+
 
 struct HomeView: View {
     private var foods = ["녹음1", "녹음2", "파일1", "파일2"]
@@ -206,7 +208,8 @@ struct BottomSheet: View {
                         .font(.system(size: 13, weight: .bold))
                 }
                 .onTapGesture {
-                    self.isShowingDocumentPicker = true
+                    //self.isShowingDocumentPicker = true
+                    handleFile()
                 }
                 .fileImporter(
                     isPresented: $isShowingDocumentPicker,
@@ -220,7 +223,7 @@ struct BottomSheet: View {
                     
                     // 파일 URL을 사용하여 가져온 파일 처리
                     // 예: 음성 파일 재생, 업로드 등
-                    handleFile(at: fileURL)
+                   // handleFile(at: fileURL)
                 }
                 /*
                 VStack {
@@ -235,9 +238,35 @@ struct BottomSheet: View {
         
     }
     
-    func handleFile(at url: URL) {
-            // 파일 처리 로직을 구현
-        }
+    func handleFile() {
+        // 파일 처리 로직을 구현
+        print("in handle file")
+        var url = URL(string: "https://firebasestorage.googleapis.com:443/v0/b/snapie-a49ff.appspot.com/o/audioFiles%2FA3991F5D-8CF5-4B66-82C8-0A839B1918BF.m4a?alt=media&token=7d3ecb71-252c-46c5-a204-bff96e463c11")
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let destinationUrl = documentsDirectory.appendingPathComponent(url!.lastPathComponent)
+        URLSession.shared.downloadTask(with: url!) { (location, response, error) in
+            guard let location = location else { return }
+            do {
+                try FileManager.default.moveItem(at: location, to: destinationUrl)
+                // Now pass `destinationUrl` to your AVAssetReader
+                let recognizer = SFSpeechRecognizer()
+                let request = SFSpeechURLRecognitionRequest(url: destinationUrl)
+
+                recognizer?.recognitionTask(with: request) { (result, error) in
+                    if let error = error {
+                        print("There was an error: \(error)")
+                    } else {
+                        print("Transcription: \(result?.bestTranscription.formattedString ?? "")")
+                    }
+                }
+            } catch {
+                print(error)
+            }
+        }.resume()
+        
+
+        
+    }
     
 
 }
