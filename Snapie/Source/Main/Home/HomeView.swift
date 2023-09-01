@@ -14,6 +14,7 @@ import Speech
 struct HomeView: View {
     private var foods = ["녹음1", "녹음2", "파일1", "파일2"]
     @StateObject var viewModel = AddDataManager()
+    @StateObject var audioEngine = AudioEngine()
     @State private var searchFood = ""
     @State var presentSheet = false
     @State var presentAudioRecord = false
@@ -27,72 +28,77 @@ struct HomeView: View {
     var body: some View {
         
         NavigationView {
-            
-            VStack() {
-                
-                ForEach(viewModel.audioFiles.indices, id: \.self) { index in
-                    NavigationLink(destination: AudioDetailView(title: $viewModel.audioFiles[index].audioTitle, content: $viewModel.audioFiles[index].text, date: $viewModel.audioFiles[index].recordedAt, totalTime: $viewModel.audioFiles[index].totalTime)) {
-                        HStack(spacing:20) {
-                            
-                            Image("docu")
-                                .padding()
-                                .background(Color.primary1)
-                                .cornerRadius(8)
-                            
-                            Text("\(viewModel.audioFiles[index].audioTitle)")
-                                .font(.system(size: 16, weight: .semibold))
-                            
-                            
-                            Spacer()
-                            var timeAgo = timeAgoSinceDate(date: viewModel.audioFiles[index].recordedAt, numericDates: false)
-                            Text("\(timeAgo)")
-                                .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.grey3)
-                            
+            ZStack {
+                VStack() {
+                    
+                    ForEach(viewModel.audioFiles.indices, id: \.self) { index in
+                        NavigationLink(destination: AudioDetailView(audioUrl: $viewModel.audioFiles[index].audioUrl, title: $viewModel.audioFiles[index].audioTitle, content: $viewModel.audioFiles[index].text, date: $viewModel.audioFiles[index].recordedAt, totalTime: $viewModel.audioFiles[index].totalTime)) {
+                            HStack(spacing:20) {
+                                
+                                Image("docu")
+                                    .padding()
+                                    .background(Color.primary1)
+                                    .cornerRadius(8)
+                                
+                                Text("\(viewModel.audioFiles[index].audioTitle)")
+                                    .font(.system(size: 16, weight: .semibold))
+                                
+                                
+                                Spacer()
+                                var timeAgo = timeAgoSinceDate(date: viewModel.audioFiles[index].recordedAt, numericDates: false)
+                                Text("\(timeAgo)")
+                                    .font(.system(size: 14, weight: .regular))
+                                    .foregroundColor(.grey3)
+                                
+                                
+                            }
+                            .frame(maxWidth: .infinity)
                             
                         }
-                        .frame(maxWidth: .infinity)
                         
                     }
-                        
-                }
-                
-               
-                //.scrollContentBackground(.hidden)
-               // .searchable(text: $searchFood)
-                
-                Spacer()
-                HStack {
+                    
+                    
+                    //.scrollContentBackground(.hidden)
+                    // .searchable(text: $searchFood)
+                    
                     Spacer()
-                    
-                    Button {
-                        presentSheet = true
-                    } label: {
-                        Image("icon_add_circle_blue")
-                    }
-                    .padding(30)
-
+                    HStack {
+                        Spacer()
                         
-                }
-
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.top, 30)
-            .background(.white)
-            .sheet(isPresented: $presentSheet) {
-                BottomSheet(presentBottomSheet: $presentSheet, presentAudioRecord: $presentAudioRecord, isShowingDocumentPicker: $isShowingDocumentPicker)
-                    .presentationDetents([.medium, .large])
-
-            }
-            .navigationTitle("Snapie")
-            .navigationBarTitleDisplayMode(.inline)
-            .fullScreenCover(isPresented: $presentAudioRecord, content: {
-                RecordView(presentAudioRecord: $presentAudioRecord)
+                        Button {
+                            presentSheet = true
+                        } label: {
+                            Image("icon_add_circle_blue")
+                        }
+                        .padding(30)
+                        
+                        
+                    }
                     
-            })
-            .onAppear{
-                viewModel.fetchAudioFiles()
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 24)
+                .padding(.top, 30)
+                .background(.white)
+                .sheet(isPresented: $presentSheet) {
+                    BottomSheet(audioEngine: audioEngine, presentBottomSheet: $presentSheet, presentAudioRecord: $presentAudioRecord, isShowingDocumentPicker: $isShowingDocumentPicker)
+                        .presentationDetents([.medium, .large])
+                    
+                }
+                .navigationTitle("Snapie")
+                .navigationBarTitleDisplayMode(.inline)
+                .fullScreenCover(isPresented: $presentAudioRecord, content: {
+                    RecordView(presentAudioRecord: $presentAudioRecord)
+                    
+                })
+                .onAppear{
+                    viewModel.fetchAudioFiles()
+                }
+                
+                if audioEngine.isLoading {
+                    ProgressView()
+                }
             }
         }
     
@@ -172,9 +178,11 @@ struct HomeView: View {
 
 }
 struct BottomSheet: View {
+    @ObservedObject var audioEngine : AudioEngine
     @Binding var presentBottomSheet : Bool
     @Binding var presentAudioRecord : Bool
     @Binding var isShowingDocumentPicker : Bool
+    
     var body: some View {
         VStack(spacing: 30) {
             Text("새 파일 만들기")
@@ -208,22 +216,19 @@ struct BottomSheet: View {
                         .font(.system(size: 13, weight: .bold))
                 }
                 .onTapGesture {
-                    //self.isShowingDocumentPicker = true
-                    handleFile()
+                    isShowingDocumentPicker = true
                 }
-                .fileImporter(
-                    isPresented: $isShowingDocumentPicker,
-                    allowedContentTypes: [.audio],
-                    allowsMultipleSelection: false
-                ) { result in
-                    guard let fileURL = try? result.get().first else {
-                        // 파일을 가져오지 못한 경우 또는 선택된 파일이 없는 경우 처리할 코드
-                        return
+                .fileImporter(isPresented: $isShowingDocumentPicker, allowedContentTypes: [.audio], allowsMultipleSelection: false) { result in
+                    switch result {
+                    case .success(let urls):
+                        if let url = urls.first {
+                            print(url)
+                            
+                            audioEngine.requestFileTranscription(url: url)
+                        }
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
                     }
-                    
-                    // 파일 URL을 사용하여 가져온 파일 처리
-                    // 예: 음성 파일 재생, 업로드 등
-                   // handleFile(at: fileURL)
                 }
                 /*
                 VStack {
@@ -232,42 +237,13 @@ struct BottomSheet: View {
                         .font(.system(size: 13, weight: .bold))
                 }*/
             }
-                
-                
+            .onAppear{
+                audioEngine.requestAudioPermission()
+                audioEngine.requestSpeechRecogPermissions()
+            }
         }
         
     }
-    
-    func handleFile() {
-        // 파일 처리 로직을 구현
-        print("in handle file")
-        var url = URL(string: "https://firebasestorage.googleapis.com:443/v0/b/snapie-a49ff.appspot.com/o/audioFiles%2FA3991F5D-8CF5-4B66-82C8-0A839B1918BF.m4a?alt=media&token=7d3ecb71-252c-46c5-a204-bff96e463c11")
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let destinationUrl = documentsDirectory.appendingPathComponent(url!.lastPathComponent)
-        URLSession.shared.downloadTask(with: url!) { (location, response, error) in
-            guard let location = location else { return }
-            do {
-                try FileManager.default.moveItem(at: location, to: destinationUrl)
-                // Now pass `destinationUrl` to your AVAssetReader
-                let recognizer = SFSpeechRecognizer()
-                let request = SFSpeechURLRecognitionRequest(url: destinationUrl)
-
-                recognizer?.recognitionTask(with: request) { (result, error) in
-                    if let error = error {
-                        print("There was an error: \(error)")
-                    } else {
-                        print("Transcription: \(result?.bestTranscription.formattedString ?? "")")
-                    }
-                }
-            } catch {
-                print(error)
-            }
-        }.resume()
-        
-
-        
-    }
-    
 
 }
 

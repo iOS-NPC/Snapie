@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct AudioDetailView: View {
+    @Binding var audioUrl : String
     @Binding var title : String
     @Binding var content : String
     @Binding var date : Date
     @Binding var totalTime : Int
+    @StateObject var audioPlayer = AudioPlayer()
     var body: some View {
         let dateString = dateformat(date: date)
         let totalTimeString = totalTimeFormat(totalSeconds: totalTime)
@@ -39,6 +41,14 @@ struct AudioDetailView: View {
                 }
                 .padding(.top, 30)
             }
+            Button {
+                if let url = URL(string:audioUrl) {
+                    self.audioPlayer.play(url: url)
+                }
+            } label: {
+                Image("play")
+            }
+
             
             
         }
@@ -91,6 +101,6 @@ struct AudioDetailView: View {
 
 struct AudioDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        AudioDetailView(title: .constant("새 녹음"), content: .constant("논의 사항 Meeting Minutes Meeting Name: Marketing Team Meeting Date: January 1, 2023 Time: 10:00am - 11:00am Location: Zoom Attendees: John Doe (Marketing Manager) Jane Smith (Marketing Coordinator)Alex Lee (Social Media Specialist) Samantha Green (Graphic Designer) Agenda: Review of last meeting's action items Update on ongoing marketing campaigns Discussion of new marketing campaign ideas Any other business Discussion: John reviewed the action items from the last meeting. All items were completed on time except for the social media report, which was delayed due to Alex's workload. John reminded Alex to prioritize the report. Jane provided an update on the email marketing campaign. The open rate was higher than expected, but the click-through rate was lower. Jane suggested making changes to the email content to improve engagement."), date: .constant(Date()), totalTime: .constant(3600 + 1983))
+        AudioDetailView(audioUrl: .constant(""), title: .constant("새 녹음"), content: .constant("논의 사항 Meeting Minutes Meeting Name: Marketing Team Meeting Date: January 1, 2023 Time: 10:00am - 11:00am Location: Zoom Attendees: John Doe (Marketing Manager) Jane Smith (Marketing Coordinator)Alex Lee (Social Media Specialist) Samantha Green (Graphic Designer) Agenda: Review of last meeting's action items Update on ongoing marketing campaigns Discussion of new marketing campaign ideas Any other business Discussion: John reviewed the action items from the last meeting. All items were completed on time except for the social media report, which was delayed due to Alex's workload. John reminded Alex to prioritize the report. Jane provided an update on the email marketing campaign. The open rate was higher than expected, but the click-through rate was lower. Jane suggested making changes to the email content to improve engagement."), date: .constant(Date()), totalTime: .constant(3600 + 1983))
     }
 }

@@ -27,8 +27,8 @@ class AudioEngine: ObservableObject {
     var firebaseManager = FirebaseManager()
     @Published var speechPermission = false
     @Published var audioPermission = false
-    private var engine: AVAudioEngine!
-    private var mixerNode: AVAudioMixerNode!
+    private var engine: AVAudioEngine?
+    private var mixerNode: AVAudioMixerNode?
    var state : RecordingState = .stopped
     private var isInterrupted : Bool = false
     private var configChangePending : Bool = false
@@ -45,13 +45,15 @@ class AudioEngine: ObservableObject {
     @Published var title = ""
     @Published var subTitle = ""
     
+    @Published var fileRecognizedText: String = ""
+    @Published var isLoading = false
+    
     private var timer: DispatchSourceTimer?
     var secondsElapsed = 0
-    
+
     init() {
         
     }
-  
     //MARK: - Methods
     /// Request authorization to use speech recognition services.
     func requestSpeechRecogPermissions() {
@@ -92,9 +94,9 @@ class AudioEngine: ObservableObject {
          
     }
     
-
+ 
     
-    func setupSession() {
+    func startRecording() {
         let session = AVAudioSession.sharedInstance()
         
         do {
@@ -103,100 +105,99 @@ class AudioEngine: ObservableObject {
         } catch {
             print("[ERROR] \(#function) - \(error.localizedDescription)")
         }
-    }
-    
-    func setupEngine() {
+        
         engine = AVAudioEngine()
         mixerNode = AVAudioMixerNode()
         
-        mixerNode.volume = 0
-        
-        engine.attach(mixerNode)
-        
-        makeConnection()
-        
-        engine.prepare()
-        
-    }
-    
-    func makeConnection() {
-
-        let inputNode = engine.inputNode
-        let inputFormat = inputNode.outputFormat(forBus: 0)
-        engine.connect(inputNode, to: mixerNode, format: inputFormat)
-        let mixerFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: inputFormat.sampleRate, channels: 1, interleaved: false)
-        engine.connect(mixerNode, to: engine.mainMixerNode, format: mixerFormat)
-    }
-    
-    
-    func startRecording() {
- 
-        
-        let tapNode: AVAudioNode = mixerNode
-        let format = tapNode.outputFormat(forBus: 0)
-        recognitionTask?.cancel()
-        recognitionTask = nil
-        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-        
-        
-        guard let recognitionRequest = recognitionRequest else { return }
-        recognitionRequest.shouldReportPartialResults = true
-        
-        recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest, resultHandler: { [weak self] result, error in
-            guard let self = self else { return }
-            if let result = result {
-                DispatchQueue.main.async {
-                    self.recognizedText = result.bestTranscription.formattedString
+        if let engine = engine, let mixerNode = mixerNode {
+            mixerNode.volume = 0
+            
+            engine.attach(mixerNode)
+            
+            let inputNode = engine.inputNode
+            let inputFormat = inputNode.outputFormat(forBus: 0)
+            engine.connect(inputNode, to: mixerNode, format: inputFormat)
+            let mixerFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: inputFormat.sampleRate, channels: 1, interleaved: false)
+            engine.connect(mixerNode, to: engine.mainMixerNode, format: mixerFormat)
+            
+            engine.prepare()
+            let tapNode: AVAudioNode = mixerNode
+            let format = tapNode.outputFormat(forBus: 0)
+            recognitionTask?.cancel()
+            recognitionTask = nil
+            recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+            
+            
+            guard let recognitionRequest = recognitionRequest else { return }
+            recognitionRequest.shouldReportPartialResults = true
+            
+            recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest, resultHandler: { [weak self] result, error in
+                guard let self = self else { return }
+                if let result = result {
+                    DispatchQueue.main.async {
+                        self.recognizedText = result.bestTranscription.formattedString
+                    }
                 }
-            }
+                
+                if error != nil || (result?.isFinal ?? false) {
+                    self.recognitionRequest = nil
+                    self.recognitionTask = nil
+                }
+            })
             
-            if error != nil || (result?.isFinal ?? false) {
-                self.recognitionRequest = nil
-                self.recognitionTask = nil
+            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            audioUrl = documentsDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
+            audioFile = try! AVAudioFile(forWriting: audioUrl!, settings: format.settings)
+            
+            tapNode.installTap(onBus: 0, bufferSize: 4096, format: format) { (buffer, time) in
+                //try? file.write(from: buffer)
+                self.recognitionRequest?.append(buffer)
+                do {
+                    try self.audioFile?.write(from: buffer)
+                } catch {
+                    print("Error writing audio file: \(error)")
+                }
+                
             }
-        })
-        
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        audioUrl = documentsDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
-        audioFile = try! AVAudioFile(forWriting: audioUrl!, settings: format.settings)
-         
-        tapNode.installTap(onBus: 0, bufferSize: 4096, format: format) { (buffer, time) in
-            //try? file.write(from: buffer)
-            self.recognitionRequest?.append(buffer)
+            startTimer()
             do {
-                try self.audioFile?.write(from: buffer)
+                try engine.start()
             } catch {
-                print("Error writing audio file: \(error)")
+                print("Error initializing audio engine start")
             }
             
+            //state = .recording
         }
-        startTimer()
-        try! engine.start()
-        //state = .recording
     }
     
     func resumeRecording() {
-        try! engine.start()
-        //state = .recording
-        startTimer()
+        if let engine = engine {
+            try! engine.start()
+            //state = .recording
+            startTimer()
+        }
     }
     
     func pauseRecording() {
-        engine.pause()
-        //state = .paused
-        stopTimer()
+        if let engine = engine {
+            engine.pause()
+            //state = .paused
+            stopTimer()
+        }
     }
     
     func stopRecording() {
-        /// Marks the end of audio input for the recognition request.
-        recognitionRequest?.endAudio()
-        /// Deinit request
-        recognitionRequest = nil
-        mixerNode.removeTap(onBus: 0)
-        
-        engine.stop()
-        //state = .stopped
-        stopTimer()
+        if let engine = engine, let mixerNode = mixerNode {
+            /// Marks the end of audio input for the recognition request.
+            recognitionRequest?.endAudio()
+            /// Deinit request
+            recognitionRequest = nil
+            mixerNode.removeTap(onBus: 0)
+            
+            engine.stop()
+            //state = .stopped
+            stopTimer()
+        }
         
         
     }
@@ -208,6 +209,7 @@ class AudioEngine: ObservableObject {
         if title.isEmpty {
             title = "새 녹음"
         }
+        //print(audioUrl)
         firebaseManager.uploadAudioFile(url: audioUrl, audioTitle: title, text: recognizedText, totalTime: secondsElapsed) { result in
             print(result)
         }
@@ -297,9 +299,36 @@ class AudioEngine: ObservableObject {
     fileprivate func handleConfigurationChange() {
         if configChangePending {
             // 연결 재시도
-            makeConnection()
+            if let engine = engine, let mixerNode = mixerNode {
+                let inputNode = engine.inputNode
+                let inputFormat = inputNode.outputFormat(forBus: 0)
+                engine.connect(inputNode, to: mixerNode, format: inputFormat)
+                let mixerFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: inputFormat.sampleRate, channels: 1, interleaved: false)
+                engine.connect(mixerNode, to: engine.mainMixerNode, format: mixerFormat)
+            }
         }
         configChangePending = false
+    }
+    
+    func requestFileTranscription(url: URL) {
+        if url.startAccessingSecurityScopedResource() {
+            self.isLoading = true
+            let recognizer = SFSpeechRecognizer()
+            let request = SFSpeechURLRecognitionRequest(url: url)
+            recognizer?.recognitionTask(with: request, resultHandler: { [weak self] (result, error) in
+                if let result = result {
+                    self?.fileRecognizedText = result.bestTranscription.formattedString
+                    print(self?.fileRecognizedText)
+                    self?.isLoading = false
+                } else if let error = error {
+                    print("Recognition Error: \(error.localizedDescription)")
+                    self?.isLoading = false
+                }
+                url.stopAccessingSecurityScopedResource() // 이 코드를 여기로 옮기세요
+            })
+        } else {
+            print("Failed to access security scoped resource.")
+        }
     }
     
 }

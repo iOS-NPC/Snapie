@@ -69,8 +69,6 @@ struct RecordView: View {
                             Image("record_start")
                             Text("녹음 시작")
                             if audioManager.audioPermission, audioManager.speechPermission {
-                                audioManager.setupSession()
-                                audioManager.setupEngine()
                                 
                                 audioManager.locale = Locale(identifier: selectedLanguage)
                                 audioManager.startRecording()
