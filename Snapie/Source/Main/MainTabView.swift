@@ -23,16 +23,15 @@ struct MainTabView: View {
                 } else {
                     Image("home_off")
                 }
-                Text("문서")
+                //Text("문서")
             }.tag(0)
-            
-            TranslationView().tabItem {
+            TextToSpeechView().tabItem {
                 if selection == 2 {
                     Image("translate_on")
                 } else {
                     Image("translate_off")
                 }
-                Text("번역")
+                //Text("")
                 
             }.tag(1)
             

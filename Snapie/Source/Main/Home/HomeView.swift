@@ -58,10 +58,6 @@ struct HomeView: View {
                         
                     }
                     
-                    
-                    //.scrollContentBackground(.hidden)
-                    // .searchable(text: $searchFood)
-                    
                     Spacer()
                     HStack {
                         Spacer()

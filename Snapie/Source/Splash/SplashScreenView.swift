@@ -16,6 +16,7 @@ struct SplashScreenView: View {
             ZStack {
                 VStack{
                     Text("Snapie")
+                        .font(.pretendardFont(.bold,size: 90))
                         .foregroundColor(.white)
                 }.frame(maxWidth: .infinity,maxHeight: .infinity)
                 .background(Color.primary1)
